@@ -18,6 +18,7 @@
 #define ROTLEFT(a, b) ((a << b) | (a >> (32 - b)))
 
 /*********************** FUNCTION DEFINITIONS ***********************/
+// 对一个block数据的处理 
 void sha1_transform(SHA1_CTX *ctx, const BYTE data[])
 {
 	WORD a, b, c, d, e, i, j, t, m[80];
@@ -79,11 +80,13 @@ void sha1_init(SHA1_CTX *ctx)
 {
 	ctx->datalen = 0;
 	ctx->bitlen = 0;
+	// 状态是什么
 	ctx->state[0] = 0x67452301;
 	ctx->state[1] = 0xEFCDAB89;
 	ctx->state[2] = 0x98BADCFE;
 	ctx->state[3] = 0x10325476;
 	ctx->state[4] = 0xc3d2e1f0;
+	// 可能是key
 	ctx->k[0] = 0x5a827999;
 	ctx->k[1] = 0x6ed9eba1;
 	ctx->k[2] = 0x8f1bbcdc;
@@ -95,10 +98,14 @@ void sha1_update(SHA1_CTX *ctx, const BYTE data[], size_t len)
 	size_t i;
 
 	for (i = 0; i < len; ++i) {
+		// 把数据拷贝到ctx结构体中
 		ctx->data[ctx->datalen] = data[i];
 		ctx->datalen++;
+		// 数据构成了一个block的长度，就处理它
 		if (ctx->datalen == 64) {
+			// 处理一个block的数据
 			sha1_transform(ctx, ctx->data);
+			// 更新已经处理好的数据长度
 			ctx->bitlen += 512;
 			ctx->datalen = 0;
 		}
