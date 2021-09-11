@@ -20,10 +20,10 @@ typedef unsigned char BYTE;             // 8-bit byte
 typedef unsigned int  WORD;             // 32-bit word, change to "long" for 16-bit machines
 
 typedef struct {
-	BYTE data[64];
-	WORD datalen;
-	unsigned long long bitlen;
-	WORD state[5];
+	BYTE data[64];// 数据
+	WORD datalen; //数据的长度
+	unsigned long long bitlen; // bit的个数
+	WORD state[5]; // 状态
 	WORD k[4];
 } SHA1_CTX;
 
