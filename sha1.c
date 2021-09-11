@@ -19,10 +19,12 @@
 
 /*********************** FUNCTION DEFINITIONS ***********************/
 // 对一个block数据的处理 
+
 void sha1_transform(SHA1_CTX *ctx, const BYTE data[])
 {
 	WORD a, b, c, d, e, i, j, t, m[80];
 
+	// 对block数据处理
 	for (i = 0, j = 0; i < 16; ++i, j += 4)
 		m[i] = (data[j] << 24) + (data[j + 1] << 16) + (data[j + 2] << 8) + (data[j + 3]);
 	for ( ; i < 80; ++i) {
@@ -30,12 +32,14 @@ void sha1_transform(SHA1_CTX *ctx, const BYTE data[])
 		m[i] = (m[i] << 1) | (m[i] >> 31);
 	}
 
+	// 初始化的hash code
 	a = ctx->state[0];
 	b = ctx->state[1];
 	c = ctx->state[2];
 	d = ctx->state[3];
 	e = ctx->state[4];
 
+	// 4个round,得到hash code
 	for (i = 0; i < 20; ++i) {
 		t = ROTLEFT(a, 5) + ((b & c) ^ (~b & d)) + e + ctx->k[0] + m[i];
 		e = d;
@@ -80,7 +84,7 @@ void sha1_init(SHA1_CTX *ctx)
 {
 	ctx->datalen = 0;
 	ctx->bitlen = 0;
-	// 状态是什么
+	// 初始化的hash code
 	ctx->state[0] = 0x67452301;
 	ctx->state[1] = 0xEFCDAB89;
 	ctx->state[2] = 0x98BADCFE;
@@ -104,6 +108,7 @@ void sha1_update(SHA1_CTX *ctx, const BYTE data[], size_t len)
 		// 数据构成了一个block的长度，就处理它
 		if (ctx->datalen == 64) {
 			// 处理一个block的数据
+			// 使用了CBC模式
 			sha1_transform(ctx, ctx->data);
 			// 更新已经处理好的数据长度
 			ctx->bitlen += 512;
@@ -118,6 +123,7 @@ void sha1_final(SHA1_CTX *ctx, BYTE hash[])
 
 	i = ctx->datalen;
 
+	// 填充最后一个block
 	// Pad whatever data is left in the buffer.
 	if (ctx->datalen < 56) {
 		ctx->data[i++] = 0x80;
@@ -128,11 +134,13 @@ void sha1_final(SHA1_CTX *ctx, BYTE hash[])
 		ctx->data[i++] = 0x80;
 		while (i < 64)
 			ctx->data[i++] = 0x00;
+		// 处理这个block
 		sha1_transform(ctx, ctx->data);
 		memset(ctx->data, 0, 56);
 	}
 
 	// Append to the padding the total message's length in bits and transform.
+	// 填充数据长度
 	ctx->bitlen += ctx->datalen * 8;
 	ctx->data[63] = ctx->bitlen;
 	ctx->data[62] = ctx->bitlen >> 8;
