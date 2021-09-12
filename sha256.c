@@ -84,8 +84,10 @@ void sha256_transform(SHA256_CTX *ctx, const BYTE data[])
 
 void sha256_init(SHA256_CTX *ctx)
 {
+	// 
 	ctx->datalen = 0;
 	ctx->bitlen = 0;
+	// 初始化大的hash code,32个字节
 	ctx->state[0] = 0x6a09e667;
 	ctx->state[1] = 0xbb67ae85;
 	ctx->state[2] = 0x3c6ef372;
